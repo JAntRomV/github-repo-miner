@@ -10,14 +10,14 @@ import java.util.List;
 public class GitHubSearchService {
 
     private SearchFilters filters;
-    private InitialValidator validator;
+    private RepositoryValidator validator;
 
-    public GitHubSearchService(SearchFilters filters, InitialValidator validator) {
+    public GitHubSearchService(SearchFilters filters, RepositoryValidator validator) {
         this.filters   = filters;
         this.validator = validator;
     }
 
-    public void executePipeline() {
+    public List<RepositoryData> executePipeline() {
         try {
             String miToken = System.getenv("GITHUB_TOKEN");
 
@@ -51,17 +51,17 @@ public class GitHubSearchService {
                 System.out.println("  [Validando cada resultado...]\n");
 
                 // Resetear contadores para este topic
-                validator.resetCounters();
+                validator.resetPhase1Counters(); 
 
                 for (GHRepository repo : searchResults) {
-                    boolean passed = validator.validate(repo, filters);
+                    boolean passed = validator.validatePhase1(repo, filters);
                     if (passed) {
                         allValidatedRepos.add(RepositoryData.fromGHRepository(repo));
                     }
                 }
 
                 // Reporte de cuántos pasaron cada filtro para este topic
-                validator.printReport();
+                 validator.printPhase1Report(); 
             }
 
             System.out.println("\n========================================");
@@ -70,11 +70,13 @@ public class GitHubSearchService {
 
             // Exportar resultados
             RepositoryExporter exporter = new RepositoryExporter();
-            exporter.exportToJson(allValidatedRepos, "results.json");
-            exporter.exportToCsv(allValidatedRepos,  "results.csv");
+            exporter.exportPhase1ToJson(allValidatedRepos, "results.json");
+            exporter.exportPhase1ToCsv(allValidatedRepos,  "results.csv");
+            return allValidatedRepos;
 
         } catch (Exception e) {
             System.err.println("Ocurrió un error en el flujo de la API: " + e.getMessage());
+            return new ArrayList<>();  // <-- agregar este return
         }
     }
 }
