@@ -27,5 +27,4 @@ target/
 .settings/
 .classpath
 .project
-
-github-repo-miner/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+*.lst
