@@ -17,7 +17,7 @@ public class GraphQLSearchService {
 
     private final String token;
     private final SearchFilters filters;
-    private final RepositoryValidator validator; // antes era SecondValidator
+    private final RepositoryValidator validator; 
     private final Gson gson;
 
     public GraphQLSearchService(SearchFilters filters, RepositoryValidator validator) {
@@ -27,7 +27,7 @@ public class GraphQLSearchService {
         this.gson      = new Gson();
     }
 
-    // Ahora devuelve List<RepositoryData> en lugar de List<EnrichedRepositoryData>
+    
     public List<RepositoryData> enrichAndFilter(List<RepositoryData> repos) {
         List<RepositoryData> enrichedList = new ArrayList<>();
         int total = repos.size();
@@ -42,16 +42,16 @@ public class GraphQLSearchService {
             processed++;
             System.out.println("\n[" + processed + "/" + total + "] " + repo.getFullName());
 
-            RepositoryData enriched = fetchMetadata(repo); // antes devolvía EnrichedRepositoryData
+            RepositoryData enriched = fetchMetadata(repo); 
 
-            if (enriched != null && validator.validatePhase2(enriched, filters)) { // antes era validate()
+            if (enriched != null && validator.validatePhase2(enriched, filters)) { 
                 enrichedList.add(enriched);
             }
 
             try { Thread.sleep(200); } catch (InterruptedException ignored) {}
         }
 
-        validator.printPhase2Report(); // antes era printReport()
+        validator.printPhase2Report();
         return enrichedList;
     }
 
@@ -171,7 +171,7 @@ public class GraphQLSearchService {
                 hasIssuesEnabled = issuesEl.getAsBoolean();
             }
 
-            // Ahora se enriquece el mismo objeto RepositoryData con los setters
+            
             repo.setCommitCount(commitCount);
             repo.setLicense(license);
             repo.setTopics(topics);
