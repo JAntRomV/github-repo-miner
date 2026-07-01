@@ -66,4 +66,25 @@ public class RepositoryData {
     public void setTopics(List<String> v)      { this.topics = v; }
     public void setWatchersCount(int v)        { this.watchersCount = v; }
     public void setHasIssuesEnabled(boolean v) { this.hasIssuesEnabled = v; }
+
+    // --- Campos Fase 3 (Filtro Técnico) ---
+private String       buildTool;              // "Maven", "Gradle", "None"
+private boolean      hasFrameworkDependency; // true si se encontró la dep del framework
+private String       detectedFramework;      // "Spring Boot", "Micronaut", "Both", "None"
+private List<String> detectedDeps;           // deps exactas encontradas
+private boolean      hasSrcMainJava;         // tiene estructura Java estándar
+
+// Getters Fase 3
+public String       getBuildTool()              { return buildTool; }
+public boolean      isHasFrameworkDependency()  { return hasFrameworkDependency; }
+public String       getDetectedFramework()      { return detectedFramework; }
+public List<String> getDetectedDeps()           { return detectedDeps; }
+public boolean      isHasSrcMainJava()          { return hasSrcMainJava; }
+
+// Setters Fase 3
+public void setBuildTool(String v)               { this.buildTool = v; }
+public void setHasFrameworkDependency(boolean v) { this.hasFrameworkDependency = v; }
+public void setDetectedFramework(String v)       { this.detectedFramework = v; }
+public void setDetectedDeps(List<String> v)      { this.detectedDeps = v; }
+public void setHasSrcMainJava(boolean v)         { this.hasSrcMainJava = v; }
 }

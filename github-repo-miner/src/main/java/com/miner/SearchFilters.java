@@ -3,7 +3,7 @@ package com.miner;
 import java.util.List;
 
 public class SearchFilters {
-
+    // Define los criterios 
     private List<String> languages = List.of("Java", "Python", "JavaScript");
     private int minCommits = 10;
     // Valores en minúscula para coincidir con los topics reales de GitHub
