@@ -121,6 +121,7 @@ public class GraphQLSearchService {
                 "query($owner: String!, $name: String!) {" +
                 "  repository(owner: $owner, name: $name) {" +
                 "    defaultBranchRef {" +
+                "      name " +
                 "      target {" +
                 "        ... on Commit {" +
                 "          history { totalCount }" +
@@ -202,11 +203,19 @@ public class GraphQLSearchService {
                 return null;
             }
 
-            // 3. Extracción segura del total de commits en la rama principal (ej. main o master)
+            // 3. Extracción segura de la rama por defecto y del total de commits (Fase 3 v2)
             int commitCount = 0;
-            JsonElement branchRef = repoData.get("defaultBranchRef");
-            if (branchRef != null && !branchRef.isJsonNull()) {
-                JsonElement target = branchRef.getAsJsonObject().get("target");
+            JsonElement branchRefEl = repoData.get("defaultBranchRef");
+            if (branchRefEl != null && !branchRefEl.isJsonNull()) {
+                JsonObject branchRefObj = branchRefEl.getAsJsonObject();
+                
+                // Extraer el nombre de la rama para la Fase 3
+                if (branchRefObj.has("name")) {
+                    repo.setDefaultBranch(branchRefObj.get("name").getAsString());
+                }
+                
+                // Extraer el total de commits del historial 
+                JsonElement target = branchRefObj.get("target");
                 if (target != null && !target.isJsonNull()) {
                     JsonElement history = target.getAsJsonObject().get("history");
                     if (history != null && !history.isJsonNull()) {

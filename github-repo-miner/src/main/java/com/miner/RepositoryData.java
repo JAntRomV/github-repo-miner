@@ -16,6 +16,7 @@ public class RepositoryData {
     private String pushedAt;
     private int forks;
     private int openIssues;
+   
 
     // --- Campos Fase 2 (GraphQL) — vacíos hasta que GraphQL los llene ---
     private int commitCount;
@@ -68,23 +69,13 @@ public class RepositoryData {
     public void setHasIssuesEnabled(boolean v) { this.hasIssuesEnabled = v; }
 
     // --- Campos Fase 3 (Filtro Técnico) ---
-private String       buildTool;              // "Maven", "Gradle", "None"
-private boolean      hasFrameworkDependency; // true si se encontró la dep del framework
-private String       detectedFramework;      // "Spring Boot", "Micronaut", "Both", "None"
-private List<String> detectedDeps;           // deps exactas encontradas
-private boolean      hasSrcMainJava;         // tiene estructura Java estándar
+    // NUEVO — necesario para Fase 3 v2
+private String defaultBranch;   // viene de Fase 2 (GraphQL defaultBranchRef.name)
+private TechProfile techProfile; // reemplaza los 5 campos sueltos anteriores
 
-// Getters Fase 3
-public String       getBuildTool()              { return buildTool; }
-public boolean      isHasFrameworkDependency()  { return hasFrameworkDependency; }
-public String       getDetectedFramework()      { return detectedFramework; }
-public List<String> getDetectedDeps()           { return detectedDeps; }
-public boolean      isHasSrcMainJava()          { return hasSrcMainJava; }
+public String getDefaultBranch()          { return defaultBranch; }
+public void setDefaultBranch(String v)    { this.defaultBranch = v; }
 
-// Setters Fase 3
-public void setBuildTool(String v)               { this.buildTool = v; }
-public void setHasFrameworkDependency(boolean v) { this.hasFrameworkDependency = v; }
-public void setDetectedFramework(String v)       { this.detectedFramework = v; }
-public void setDetectedDeps(List<String> v)      { this.detectedDeps = v; }
-public void setHasSrcMainJava(boolean v)         { this.hasSrcMainJava = v; }
+public TechProfile getTechProfile()       { return techProfile; }
+public void setTechProfile(TechProfile v) { this.techProfile = v; }
 }

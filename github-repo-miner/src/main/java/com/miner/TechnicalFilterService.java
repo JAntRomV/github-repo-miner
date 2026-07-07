@@ -1,181 +1,161 @@
 package com.miner;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TechnicalFilterService {
 
     private static final String API_BASE = "https://api.github.com/repos";
 
-    private final String              token;
-    private final SearchFilters       filters;
+    private final String token;
     private final RepositoryValidator validator;
-    private final RepositoryParser    parser;
-    private final Gson                gson;
-    private final HttpClient          httpClient;
+    private final Gson gson = new Gson();
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+    private final RawFileFetcher rawFetcher = new RawFileFetcher();
+    private final List<BuildFileAnalyzer> analyzers = List.of(new MavenAnalyzer(), new GradleAnalyzer());
 
     public TechnicalFilterService(SearchFilters filters, RepositoryValidator validator) {
-        this.token      = System.getenv("GITHUB_TOKEN");
-        this.filters    = filters;
-        this.validator  = validator;
-        this.parser     = new RepositoryParser();
-        this.gson       = new Gson();
-        this.httpClient = HttpClient.newHttpClient();
+        this.token = System.getenv("GITHUB_TOKEN");
+        this.validator = validator;
     }
 
-    // Orquestador de Fase 3
     public List<RepositoryData> filterAndValidate(List<RepositoryData> repos) {
-        List<RepositoryData> approvedRepos = new ArrayList<>();
-        int total     = repos.size();
+        List<RepositoryData> approved = new ArrayList<>();
+        int total = repos.size();
         int processed = 0;
 
         System.out.println("\n========================================");
-        System.out.println("  FASE 3: FILTRO TECNICO");
+        System.out.println("  FASE 3 v2: TechProfile");
         System.out.println("  Repositorios a analizar: " + total);
         System.out.println("========================================");
 
         for (RepositoryData repo : repos) {
             processed++;
-            System.out.println("\n[" + processed + "/" + total + "] " + repo.getFullName());
-
             String[] parts = repo.getFullName().split("/");
             String owner = parts[0];
             String name  = parts[1];
+            String branch = (repo.getDefaultBranch() != null && !repo.getDefaultBranch().isEmpty())
+                ? repo.getDefaultBranch() : "main"; // fallback si Fase 2 no lo capturó
 
-            // 1. Intentar descargar el archivo de build
-            ParseResult parseResult = fetchAndParseBuildFile(owner, name);
+            System.out.println("\n[" + processed + "/" + total + "] " + repo.getFullName() + " (branch=" + branch + ")");
 
-            // 2. Verificar si existe la estructura estándar de Java
-            boolean hasSrcMainJava = checkDirectoryExists(owner, name, "src/main/java");
+            try {
+                // 1. Inventario — UNA sola llamada a Git Trees API
+                FileTree tree = fetchFileTree(owner, name, branch);
+                if (tree.isTruncated()) {
+                    System.out.println("  [WARN] Árbol truncado (repo muy grande)");
+                }
 
-            // 3. Llenar campos de Fase 3 en RepositoryData
-            repo.setBuildTool(parseResult.getBuildTool());
-            repo.setHasFrameworkDependency(
-                parseResult.isHasSpringBoot() || parseResult.isHasMicronaut()
-            );
-            repo.setDetectedFramework(resolveFramework(parseResult));
-            repo.setDetectedDeps(parseResult.getDetectedDeps());
-            repo.setHasSrcMainJava(hasSrcMainJava);
+                // 2. Build tool SIN descargar contenido
+                BuildTool tool = tree.detectBuildTool();
 
-            System.out.println("  [PARSE] buildTool="    + repo.getBuildTool()
-                + " | framework="  + repo.getDetectedFramework()
-                + " | deps="       + repo.getDetectedDeps()
-                + " | src/main/java=" + hasSrcMainJava);
+                // 3. Descargar SOLO los build files relevantes
+                Map<String, String> buildFiles = downloadRelevantFiles(owner, name, branch, tool, tree);
 
-            // 4. Aplicar la tercera validación
-            if (validator.validatePhase3(repo)) {
-                approvedRepos.add(repo);
+                // 4. Seleccionar analyzer (patrón Strategy)
+                BuildFileAnalyzer analyzer = analyzers.stream()
+                    .filter(a -> a.supports(tool)).findFirst().orElse(null);
+
+                TechProfile profile = (analyzer != null)
+                    ? analyzer.analyze(tree, buildFiles)
+                    : TechProfile.empty(tool);
+
+                // 5. Refinar sector con topics de Fase 2
+                profile = refineSector(profile, repo);
+
+                repo.setTechProfile(profile);
+                System.out.println("  [PROFILE] " + summarize(profile));
+
+                // 6. Filtros duros
+                if (validator.validatePhase3(profile)) {
+                    approved.add(repo);
+                }
+
+            } catch (Exception e) {
+                System.err.println("  [ERROR] " + repo.getFullName() + ": " + e.getMessage());
             }
 
-            // Pausa para respetar rate limits de la API
             try { Thread.sleep(300); } catch (InterruptedException ignored) {}
         }
 
         validator.printPhase3Report();
-        return approvedRepos;
+        return approved;
     }
 
-    // Intenta descargar pom.xml → build.gradle → build.gradle.kts en ese orden
-    private ParseResult fetchAndParseBuildFile(String owner, String repo) {
+    // 1 llamada por repo — inventario completo
+    private FileTree fetchFileTree(String owner, String repo, String branch) throws Exception {
+        String url = String.format("%s/%s/%s/git/trees/%s?recursive=1", API_BASE, owner, repo, branch);
 
-        // Intento 1: pom.xml (Maven)
-        String pomContent = fetchFileContent(owner, repo, "pom.xml");
-        if (pomContent != null) {
-            System.out.println("  [BUILD] pom.xml encontrado → Maven");
-            return parser.parsePomXml(pomContent);
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .header("Accept", "application/vnd.github.v3+json")
+            .GET()
+            .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            throw new Exception("HTTP " + response.statusCode() + " obteniendo árbol");
         }
 
-        // Intento 2: build.gradle (Gradle Groovy DSL)
-        String gradleContent = fetchFileContent(owner, repo, "build.gradle");
-        if (gradleContent != null) {
-            System.out.println("  [BUILD] build.gradle encontrado → Gradle");
-            return parser.parseBuildGradle(gradleContent);
-        }
-
-        // Intento 3: build.gradle.kts (Gradle Kotlin DSL)
-        String gradleKtsContent = fetchFileContent(owner, repo, "build.gradle.kts");
-        if (gradleKtsContent != null) {
-            System.out.println("  [BUILD] build.gradle.kts encontrado → Gradle Kotlin");
-            return parser.parseBuildGradle(gradleKtsContent);
-        }
-
-        // No se encontró ningún archivo de build
-        System.out.println("  [BUILD] Sin archivo de build en la raiz del repo");
-        return new ParseResult(); // buildTool = "None" por defecto
+        return FileTree.fromJson(gson.fromJson(response.body(), JsonObject.class));
     }
 
-    // Descarga un archivo desde la API de GitHub y decodifica el contenido Base64
-    private String fetchFileContent(String owner, String repo, String filename) {
-        try {
-            String url = API_BASE + "/" + owner + "/" + repo + "/contents/" + filename;
+    // Descarga SOLO los build files relevantes, vía raw.githubusercontent.com
+    private Map<String, String> downloadRelevantFiles(String owner, String repo, String branch,
+                                                        BuildTool tool, FileTree tree) {
+        Map<String, String> files = new HashMap<>();
 
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Authorization", "Bearer " + token)
-                .header("Accept", "application/vnd.github.v3+json")
-                .GET()
-                .build();
+        if (tool == BuildTool.MAVEN) {
+            rawFetcher.fetch(owner, repo, branch, "pom.xml")
+                .ifPresent(c -> files.put("pom.xml", c));
 
-            HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == 200) {
-                JsonObject json    = gson.fromJson(response.body(), JsonObject.class);
-                JsonElement content = json.get("content");
-
-                if (content != null && !content.isJsonNull()) {
-                    // GitHub devuelve el contenido en Base64 con saltos de línea — hay que limpiarlos
-                    String base64Clean = content.getAsString()
-                        .replace("\n", "")
-                        .replace("\\n", "");
-                    byte[] decoded = Base64.getDecoder().decode(base64Clean);
-                    return new String(decoded, StandardCharsets.UTF_8);
-                }
+        } else if (tool == BuildTool.GRADLE) {
+            String primary = tree.getPrimaryBuildFilePath();
+            if (primary != null) {
+                rawFetcher.fetch(owner, repo, branch, primary).ifPresent(c -> files.put(primary, c));
             }
-            return null; // 404 = archivo no existe en este repo
-
-        } catch (Exception e) {
-            System.err.println("  [ERROR] fetchFileContent(" + filename + "): " + e.getMessage());
-            return null;
+            if (tree.fileExists("gradle/libs.versions.toml")) {
+                rawFetcher.fetch(owner, repo, branch, "gradle/libs.versions.toml")
+                    .ifPresent(c -> files.put("gradle/libs.versions.toml", c));
+            }
+            if (tree.fileExists("gradle.properties")) {
+                rawFetcher.fetch(owner, repo, branch, "gradle.properties")
+                    .ifPresent(c -> files.put("gradle.properties", c));
+            }
         }
+        return files;
     }
 
-    // Verifica si un directorio existe en el repo usando la API de contenidos
-    private boolean checkDirectoryExists(String owner, String repo, String path) {
-        try {
-            String url = API_BASE + "/" + owner + "/" + repo + "/contents/" + path;
+    // Refina Sector con la señal que SÍ tenemos de Fase 2: topics
+    private TechProfile refineSector(TechProfile profile, RepositoryData repo) {
+        if (profile.sector() != Sector.UNKNOWN) return profile; // ya venía de CITATION.cff
 
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Authorization", "Bearer " + token)
-                .header("Accept", "application/vnd.github.v3+json")
-                .GET()
-                .build();
+        boolean looksAcademic = repo.getTopics() != null && repo.getTopics().stream()
+            .anyMatch(t -> t.contains("research") || t.contains("academic") || t.contains("university"));
 
-            HttpResponse<String> response =
-                httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (!looksAcademic) return profile;
 
-            return response.statusCode() == 200; // 200 = existe, 404 = no existe
-
-        } catch (Exception e) {
-            return false;
-        }
+        return new TechProfile(
+            profile.buildTool(), profile.framework(), profile.javaVersion(), profile.java21(),
+            profile.graalvmReady(), profile.hasTestSuite(), profile.testFramework(), profile.testFileCount(),
+            profile.jmhPresent(), profile.jmhCandidate(), profile.profilingCandidate(),
+            Sector.ACADEMIC, profile.travisCi(), profile.passesHardFilters()
+        );
     }
 
-    // Determina qué framework fue detectado según el resultado del parseo
-    private String resolveFramework(ParseResult result) {
-        if (result.isHasSpringBoot() && result.isHasMicronaut()) return "Both";
-        if (result.isHasSpringBoot()) return "Spring Boot";
-        if (result.isHasMicronaut())  return "Micronaut";
-        return "None";
+    private String summarize(TechProfile p) {
+        return p.framework() + " | Java" + p.javaVersion() + (p.java21() ? "✓" : "✗")
+            + " | GraalVM=" + p.graalvmReady() + " | Tests=" + p.hasTestSuite()
+            + " (" + p.testFileCount() + ") | JMH=" + p.jmhCandidate()
+            + " | HardFilters=" + p.passesHardFilters();
     }
 }
