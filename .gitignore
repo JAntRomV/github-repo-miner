@@ -27,5 +27,15 @@ target/
 .settings/
 .classpath
 .project
+*.lst
 
-github-repo-miner/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# Sistema operativo
+.DS_Store
+
+# Variables de entorno (nunca subir el token)
+.env

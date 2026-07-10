@@ -94,4 +94,42 @@ public class RepositoryValidator {
         p1Vacios     = 0;
         p1Aprobados  = 0;
     }
+
+// Contadores Fase 3 v2
+private int p3Procesados   = 0;
+private int p3SinFramework = 0;
+private int p3SinJava21    = 0;
+private int p3SinTestSuite = 0;
+private int p3Aprobados    = 0;
+
+// Filtros duros según la spec: framework correcto + Java 21 + set de pruebas.
+// GraalVM es señal ponderable (Fase 4), NO filtro duro — así lo define el documento.
+public boolean validatePhase3(TechProfile profile) {
+    p3Procesados++;
+
+    if (profile.framework() == Framework.NONE) {
+        p3SinFramework++;
+        return false;
+    }
+    if (!profile.java21()) {
+        p3SinJava21++;
+        return false;
+    }
+    if (!profile.hasTestSuite()) {
+        p3SinTestSuite++;
+        return false;
+    }
+
+    p3Aprobados++;
+    return true;
+}
+
+public void printPhase3Report() {
+    System.out.println("\n  === REPORTE FASE 3 v2 - TechProfile ===");
+    System.out.println("  Total procesados:             " + p3Procesados);
+    System.out.println("  Descartados (sin framework):  " + p3SinFramework);
+    System.out.println("  Descartados (sin Java 21):    " + p3SinJava21);
+    System.out.println("  Descartados (sin test suite): " + p3SinTestSuite);
+    System.out.println("  Total aprobados:               " + p3Aprobados);
+}
 }

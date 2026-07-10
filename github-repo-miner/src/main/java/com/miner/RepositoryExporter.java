@@ -88,4 +88,50 @@ public class RepositoryExporter {
         if (value == null) return "";
         return value.replace(",", ";").replace("\n", " ").replace("\r", "");
     }
+    // fase 3 
+   public void exportPhase3ToJson(List<RepositoryData> repos, String filename) {
+    try {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filename), repos);
+        System.out.println("JSON Fase 3 guardado: " + filename + " (" + repos.size() + " repos)");
+    } catch (IOException e) {
+        System.err.println("Error al guardar JSON Fase 3: " + e.getMessage());
+    }
+}
+
+public void exportPhase3ToCsv(List<RepositoryData> repos, String filename) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+
+        writer.write("fullName,description,url,stars,size,language,pushedAt,forks," +
+                     "openIssues,commitCount,license,topics,watchersCount,hasIssuesEnabled," +
+                     "buildTool,framework,javaVersion,java21,graalvmReady," +
+                     "hasTestSuite,testFramework,testFileCount," +
+                     "jmhPresent,jmhCandidate,profilingCandidate," +
+                     "sector,travisCi,passesHardFilters");
+        writer.newLine();
+
+        for (RepositoryData repo : repos) {
+            TechProfile p = repo.getTechProfile();
+            String topicsJoined = repo.getTopics() != null ? String.join("|", repo.getTopics()) : "";
+
+            writer.write(String.format(
+                "%s,%s,%s,%d,%d,%s,%s,%d,%d,%d,%s,%s,%d,%b," +
+                "%s,%s,%d,%b,%b,%b,%s,%d,%b,%b,%b,%s,%b,%b",
+                sanitize(repo.getFullName()), sanitize(repo.getDescription()), sanitize(repo.getHtmlUrl()),
+                repo.getStars(), repo.getSize(), sanitize(repo.getLanguage()), sanitize(repo.getPushedAt()),
+                repo.getForks(), repo.getOpenIssues(), repo.getCommitCount(), sanitize(repo.getLicense()),
+                sanitize(topicsJoined), repo.getWatchersCount(), repo.isHasIssuesEnabled(),
+                p.buildTool(), p.framework(), p.javaVersion(), p.java21(), p.graalvmReady(),
+                p.hasTestSuite(), p.testFramework(), p.testFileCount(),
+                p.jmhPresent(), p.jmhCandidate(), p.profilingCandidate(),
+                p.sector(), p.travisCi(), p.passesHardFilters()
+            ));
+            writer.newLine();
+        }
+        System.out.println("CSV Fase 3 guardado: " + filename + " (" + repos.size() + " repos)");
+
+    } catch (IOException e) {
+        System.err.println("Error al guardar CSV Fase 3: " + e.getMessage());
+    }
+}
 }

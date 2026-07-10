@@ -16,6 +16,7 @@ public class RepositoryData {
     private String pushedAt;
     private int forks;
     private int openIssues;
+   
 
     // --- Campos Fase 2 (GraphQL) — vacíos hasta que GraphQL los llene ---
     private int commitCount;
@@ -66,4 +67,15 @@ public class RepositoryData {
     public void setTopics(List<String> v)      { this.topics = v; }
     public void setWatchersCount(int v)        { this.watchersCount = v; }
     public void setHasIssuesEnabled(boolean v) { this.hasIssuesEnabled = v; }
+
+    // --- Campos Fase 3 (Filtro Técnico) ---
+    // NUEVO — necesario para Fase 3 v2
+private String defaultBranch;   // viene de Fase 2 (GraphQL defaultBranchRef.name)
+private TechProfile techProfile; // reemplaza los 5 campos sueltos anteriores
+
+public String getDefaultBranch()          { return defaultBranch; }
+public void setDefaultBranch(String v)    { this.defaultBranch = v; }
+
+public TechProfile getTechProfile()       { return techProfile; }
+public void setTechProfile(TechProfile v) { this.techProfile = v; }
 }
