@@ -1,0 +1,321 @@
+[ {
+  "fullName" : "conductor-oss/conductor",
+  "technicalScore" : 7.0,
+  "testQualityScore" : 0.0,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 19.145693373143814,
+  "maintenanceScore" : 14.846575342465753,
+  "totalScore" : 50.99226871560957,
+  "rank" : 1
+}, {
+  "fullName" : "adorsys/keycloak-config-cli",
+  "technicalScore" : 7.0,
+  "testQualityScore" : 4.659090909090909,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 11.670993386555457,
+  "maintenanceScore" : 13.635832446529758,
+  "totalScore" : 46.96591674217612,
+  "rank" : 2
+}, {
+  "fullName" : "theborakompanioni/bitcoin-spring-boot-starter",
+  "technicalScore" : 22.0,
+  "testQualityScore" : 0.0,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 4.525571855916339,
+  "maintenanceScore" : 12.848336894509693,
+  "totalScore" : 46.37390875042603,
+  "rank" : 3
+}, {
+  "fullName" : "tmseidel/ai-git-bot",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 15.0,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 5.0,
+  "popularityScore" : 5.291362441421572,
+  "maintenanceScore" : 11.55784225209797,
+  "totalScore" : 43.84920469351954,
+  "rank" : 4
+}, {
+  "fullName" : "devondragon/SpringUserFramework",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 13.522727272727272,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 6.985665972916901,
+  "maintenanceScore" : 12.145178146463472,
+  "totalScore" : 42.65357139210765,
+  "rank" : 5
+}, {
+  "fullName" : "hantsy/spring-reactive-jwt-sample",
+  "technicalScore" : 7.0,
+  "testQualityScore" : 1.1363636363636365,
+  "ciHygieneScore" : 15.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 7.114459455314254,
+  "maintenanceScore" : 9.212515301734388,
+  "totalScore" : 39.46333839341228,
+  "rank" : 6
+}, {
+  "fullName" : "RawSanj/spring-redis-websocket",
+  "technicalScore" : 15.0,
+  "testQualityScore" : 0.2272727272727273,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 7.488515196404683,
+  "maintenanceScore" : 5.713507083293156,
+  "totalScore" : 38.42929500697057,
+  "rank" : 7
+}, {
+  "fullName" : "josdem/vetlog-spring-boot",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 6.363636363636364,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 5.839336603809746,
+  "maintenanceScore" : 13.829447746379468,
+  "totalScore" : 36.03242071382557,
+  "rank" : 8
+}, {
+  "fullName" : "rieckpil/testing-spring-boot-applications-masterclass",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 2.159090909090909,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 11.74503984122666,
+  "maintenanceScore" : 11.52995518764679,
+  "totalScore" : 35.43408593796436,
+  "rank" : 9
+}, {
+  "fullName" : "uppnrise/distributed-rate-limiter",
+  "technicalScore" : 7.0,
+  "testQualityScore" : 8.068181818181818,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 2.5605640367884757,
+  "maintenanceScore" : 10.124710727956078,
+  "totalScore" : 34.753456582926376,
+  "rank" : 10
+}, {
+  "fullName" : "hmcts/document-management-store-app",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 3.181818181818182,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 6.654836519144068,
+  "maintenanceScore" : 14.557228387886237,
+  "totalScore" : 34.39388308884848,
+  "rank" : 11
+}, {
+  "fullName" : "YuBing-link/noveltrans",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 12.954545454545455,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 0.5602592939759518,
+  "maintenanceScore" : 9.77585257892739,
+  "totalScore" : 33.2906573274488,
+  "rank" : 12
+}, {
+  "fullName" : "aidanwhiteley/books",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 4.545454545454546,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 5.698057849565379,
+  "maintenanceScore" : 12.694912236975448,
+  "totalScore" : 32.938424631995375,
+  "rank" : 13
+}, {
+  "fullName" : "openanalytics/shinyproxy",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 1.25,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 11.516967693082467,
+  "maintenanceScore" : 11.433987268047591,
+  "totalScore" : 31.20095496113006,
+  "rank" : 14
+}, {
+  "fullName" : "hantsy/spring-webmvc-jwt-sample",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.4545454545454546,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 10.97710078689729,
+  "maintenanceScore" : 9.759746114428802,
+  "totalScore" : 31.19139235587155,
+  "rank" : 15
+}, {
+  "fullName" : "vaadin/flow-crm-tutorial",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.4545454545454546,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 9.61129955766883,
+  "maintenanceScore" : 10.99350130069271,
+  "totalScore" : 31.059346312906992,
+  "rank" : 16
+}, {
+  "fullName" : "vaadin/skeleton-starter-flow-spring",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.11363636363636365,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 6.524994082019184,
+  "maintenanceScore" : 11.89406223912422,
+  "totalScore" : 28.532692684779768,
+  "rank" : 17
+}, {
+  "fullName" : "hmcts/spring-boot-template",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.11363636363636365,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 9.175242470106829,
+  "maintenanceScore" : 11.825157496949949,
+  "totalScore" : 28.11403633069314,
+  "rank" : 18
+}, {
+  "fullName" : "adorsys/xs2a-adapter",
+  "technicalScore" : 7.0,
+  "testQualityScore" : 0.0,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 4.97653994438175,
+  "maintenanceScore" : 9.084421825287553,
+  "totalScore" : 28.0609617696693,
+  "rank" : 19
+}, {
+  "fullName" : "KingPrimes/NyxBot",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 1.590909090909091,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 3.9066312112315216,
+  "maintenanceScore" : 12.338662068791244,
+  "totalScore" : 27.836202370931858,
+  "rank" : 20
+}, {
+  "fullName" : "itning/yunshu-nas",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.0,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 7.444663008236598,
+  "maintenanceScore" : 13.173924478176474,
+  "totalScore" : 27.618587486413073,
+  "rank" : 21
+}, {
+  "fullName" : "TechMentors-LLC/charity_hub",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 6.136363636363637,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 2.4675854781804745,
+  "maintenanceScore" : 9.244206900027336,
+  "totalScore" : 24.848156014571448,
+  "rank" : 22
+}, {
+  "fullName" : "tangredtea/Spring-Blog",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.4545454545454546,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 6.490773713081295,
+  "maintenanceScore" : 7.322107205887204,
+  "totalScore" : 24.267426373513953,
+  "rank" : 23
+}, {
+  "fullName" : "piomin/spring-ai-showcase",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.34090909090909094,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 4.67269710211321,
+  "maintenanceScore" : 9.142877204651391,
+  "totalScore" : 24.156483397673693,
+  "rank" : 24
+}, {
+  "fullName" : "Suwayomi/Suwayomi-VaadinUI",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.0,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 1.1555012262345286,
+  "maintenanceScore" : 12.03860967425943,
+  "totalScore" : 23.19411090049396,
+  "rank" : 25
+}, {
+  "fullName" : "scaleracademy/twitter-backend-java",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.0,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 6.280691785719503,
+  "maintenanceScore" : 6.678409929486115,
+  "totalScore" : 22.95910171520562,
+  "rank" : 26
+}, {
+  "fullName" : "jonathanlermitage/manon",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 2.6136363636363638,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 2.1952202748144227,
+  "maintenanceScore" : 8.120675920155097,
+  "totalScore" : 22.929532558605885,
+  "rank" : 27
+}, {
+  "fullName" : "entur/jwt-resource-server",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.0,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 4.0420003292706905,
+  "maintenanceScore" : 11.726532130981468,
+  "totalScore" : 22.76853246025216,
+  "rank" : 28
+}, {
+  "fullName" : "mirkosertic/flight-recorder-starter",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 1.7045454545454546,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 3.0855589392032705,
+  "maintenanceScore" : 9.997436064556991,
+  "totalScore" : 21.787540458305717,
+  "rank" : 29
+}, {
+  "fullName" : "deadlocker8/BudgetMaster",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.0,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 3.8357561642926026,
+  "maintenanceScore" : 10.95157335046915,
+  "totalScore" : 21.78732951476175,
+  "rank" : 30
+}, {
+  "fullName" : "El-12stu/RelaMind",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 1.25,
+  "ciHygieneScore" : 10.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 7.2884839324230235,
+  "maintenanceScore" : 3.010958904109589,
+  "totalScore" : 21.549442836532613,
+  "rank" : 31
+}, {
+  "fullName" : "ohbus/retail-banking",
+  "technicalScore" : 0.0,
+  "testQualityScore" : 0.5681818181818182,
+  "ciHygieneScore" : 7.0,
+  "sectorScore" : 0.0,
+  "popularityScore" : 5.084760389391271,
+  "maintenanceScore" : 2.4812435377508466,
+  "totalScore" : 15.134185745323936,
+  "rank" : 32
+} ]

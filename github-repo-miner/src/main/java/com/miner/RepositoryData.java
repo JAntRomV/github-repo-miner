@@ -4,6 +4,7 @@ import org.kohsuke.github.GHRepository;
 import java.io.IOException;
 import java.util.List;
 
+
 public class RepositoryData {
 
     // --- Campos Fase 1 (REST API) ---
@@ -53,6 +54,18 @@ public class RepositoryData {
     public String getPushedAt()    { return pushedAt; }
     public int    getForks()       { return forks; }
     public int    getOpenIssues()  { return openIssues; }
+    //*********************************************** */
+    // Setters de Fase 1 — agregados para permitir testing con datos ficticios
+    // y para que Jackson pueda deserializar results_phase3.json en ScoringApp
+    public void setFullName(String v)     { this.fullName = v; }
+    public void setDescription(String v)  { this.description = v; }
+    public void setHtmlUrl(String v)      { this.htmlUrl = v; }
+    public void setStars(int v)           { this.stars = v; }
+    public void setSize(int v)            { this.size = v; }
+    public void setLanguage(String v)     { this.language = v; }
+    public void setPushedAt(String v)     { this.pushedAt = v; }
+    public void setForks(int v)           { this.forks = v; }
+    public void setOpenIssues(int v)      { this.openIssues = v; }
 
     // Getters Fase 2
     public int          getCommitCount()      { return commitCount; }
