@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: miner_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: miner_db
+      POSTGRES_USER: miner_user
+      POSTGRES_PASSWORD: miner_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - miner_pgdata:/var/lib/postgresql/data
+
+volumes:
+  miner_pgdata:

@@ -29,13 +29,14 @@ public class ReportGenerator {
     private void appendSummaryStats(Connection conn, StringBuilder md) throws SQLException {
         md.append("## Resumen General\n\n");
 
+        // AHORA — agregar ::numeric antes de cada ROUND
         String sql = """
-            SELECT COUNT(*) as total,
-                   ROUND(AVG(total_score), 1) as avg_score,
-                   ROUND(MAX(total_score), 1) as max_score,
-                   ROUND(MIN(total_score), 1) as min_score
-            FROM repo_scores
-        """;
+                    SELECT COUNT(*) as total,
+                           ROUND(AVG(total_score)::numeric, 1) as avg_score,
+                           ROUND(MAX(total_score)::numeric, 1) as max_score,
+                           ROUND(MIN(total_score)::numeric, 1) as min_score
+                    FROM repo_scores
+                """;
 
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             if (rs.next()) {
@@ -49,46 +50,49 @@ public class ReportGenerator {
     }
 
     private void appendTopRanking(Connection conn, StringBuilder md) throws SQLException {
-        md.append("## Top 15 del Ranking\n\n");
-        md.append("| Rank | Repositorio | Total | Técnico | Tests | CI/Higiene | Sector | Popularidad | Mantenim. |\n");
-        md.append("|---|---|---|---|---|---|---|---|---|\n");
+    md.append("## Top 15 del Ranking\n\n");
+    md.append("| Rank | Repositorio | Total | Técnico | Tests | CI/Higiene | Sector | Popularidad | Mantenim. |\n");
+    md.append("|---|---|---|---|---|---|---|---|---|\n");
 
-        String sql = """
-            SELECT rank, full_name, total_score, technical_score, test_quality_score,
-                   ci_hygiene_score, sector_score, popularity_score, maintenance_score
-            FROM repo_scores
-            ORDER BY rank ASC
-            LIMIT 15
-        """;
+    // Reemplazamos los ... por las columnas reales que usa tu rúbrica
+    String sql = """
+      SELECT repo_rank, full_name, total_score, technical_score, 
+             test_quality_score, ci_hygiene_score, sector_score, 
+             popularity_score, maintenance_score
+      FROM repo_scores
+      ORDER BY repo_rank ASC
+      LIMIT 15
+      """;
 
-        try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                md.append("| ").append(rs.getInt("rank"))
-                  .append(" | ").append(rs.getString("full_name"))
-                  .append(" | ").append(String.format("%.1f", rs.getDouble("total_score")))
-                  .append(" | ").append(String.format("%.1f", rs.getDouble("technical_score")))
-                  .append(" | ").append(String.format("%.1f", rs.getDouble("test_quality_score")))
-                  .append(" | ").append(String.format("%.1f", rs.getDouble("ci_hygiene_score")))
-                  .append(" | ").append(String.format("%.1f", rs.getDouble("sector_score")))
-                  .append(" | ").append(String.format("%.1f", rs.getDouble("popularity_score")))
-                  .append(" | ").append(String.format("%.1f", rs.getDouble("maintenance_score")))
-                  .append(" |\n");
-            }
+    try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        while (rs.next()) {
+            md.append("| ").append(rs.getInt("repo_rank"))
+              .append(" | ").append(rs.getString("full_name"))
+              .append(" | ").append(String.format("%.1f", rs.getDouble("total_score")))
+              .append(" | ").append(String.format("%.1f", rs.getDouble("technical_score")))
+              .append(" | ").append(String.format("%.1f", rs.getDouble("test_quality_score")))
+              .append(" | ").append(String.format("%.1f", rs.getDouble("ci_hygiene_score")))
+              .append(" | ").append(String.format("%.1f", rs.getDouble("sector_score")))
+              .append(" | ").append(String.format("%.1f", rs.getDouble("popularity_score")))
+              .append(" | ").append(String.format("%.1f", rs.getDouble("maintenance_score")))
+              .append(" |\n");
         }
-        md.append("\n");
     }
+    md.append("\n");
+}
 
     private void appendFrameworkBreakdown(Connection conn, StringBuilder md) throws SQLException {
         md.append("## Distribución por Framework\n\n");
         md.append("| Framework | Cantidad | Score Promedio |\n|---|---|---|\n");
 
+       
         String sql = """
-            SELECT t.framework, COUNT(*) as cantidad, ROUND(AVG(s.total_score), 1) as avg_score
-            FROM tech_profiles t
-            JOIN repo_scores s ON t.full_name = s.full_name
-            GROUP BY t.framework
-            ORDER BY cantidad DESC
-        """;
+                    SELECT t.framework, COUNT(*) as cantidad, ROUND(AVG(s.total_score)::numeric, 1) as avg_score
+                    FROM tech_profiles t
+                    JOIN repo_scores s ON t.full_name = s.full_name
+                    GROUP BY t.framework
+                    ORDER BY cantidad DESC
+                """;
 
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -105,10 +109,11 @@ public class ReportGenerator {
 
         String sql = """
             SELECT
-                SUM(CASE WHEN graalvm_ready = 1 THEN 1 ELSE 0 END) as graalvm_count,
-                SUM(CASE WHEN jmh_present = 1 THEN 1 ELSE 0 END) as jmh_confirmed,
-                SUM(CASE WHEN jmh_candidate = 1 AND jmh_present = 0 THEN 1 ELSE 0 END) as jmh_heuristic,
-                SUM(CASE WHEN travis_ci = 1 THEN 1 ELSE 0 END) as travis_count,
+                
+                    SUM(CASE WHEN graalvm_ready THEN 1 ELSE 0 END) as graalvm_count,
+                    SUM(CASE WHEN jmh_present THEN 1 ELSE 0 END) as jmh_confirmed,
+                    SUM(CASE WHEN jmh_candidate AND NOT jmh_present THEN 1 ELSE 0 END) as jmh_heuristic,
+                    SUM(CASE WHEN travis_ci THEN 1 ELSE 0 END) as travis_count,
                 COUNT(*) as total
             FROM tech_profiles
         """;

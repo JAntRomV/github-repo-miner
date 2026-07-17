@@ -12,8 +12,6 @@ public class RepositoryStorageService {
 
     private final Gson gson = new Gson();
 
-    // Guarda todo en UNA transacción — si algo falla a medio camino,
-    // no queda la BD con datos parciales inconsistentes
     public void saveAll(List<RepositoryData> repos, List<RepoScore> scores) throws SQLException {
         Map<String, RepoScore> scoreByName = scores.stream()
             .collect(Collectors.toMap(RepoScore::fullName, s -> s));
@@ -34,7 +32,7 @@ public class RepositoryStorageService {
             }
 
             conn.commit();
-            System.out.println("✓ " + repos.size() + " repositorios guardados en miner.db");
+            System.out.println("✓ " + repos.size() + " repositorios guardados en PostgreSQL");
         }
     }
 
@@ -45,7 +43,7 @@ public class RepositoryStorageService {
              forks, open_issues, commit_count, license, topics, watchers_count,
              has_issues_enabled, default_branch)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-            ON CONFLICT(full_name) DO UPDATE SET
+            ON CONFLICT (full_name) DO UPDATE SET
                 description=excluded.description, stars=excluded.stars,
                 size=excluded.size, forks=excluded.forks,
                 open_issues=excluded.open_issues, commit_count=excluded.commit_count,
@@ -67,9 +65,9 @@ public class RepositoryStorageService {
             ps.setInt(9, repo.getOpenIssues());
             ps.setInt(10, repo.getCommitCount());
             ps.setString(11, repo.getLicense());
-            ps.setString(12, gson.toJson(repo.getTopics())); // lista -> JSON string
+            ps.setString(12, gson.toJson(repo.getTopics()));
             ps.setInt(13, repo.getWatchersCount());
-            ps.setInt(14, repo.isHasIssuesEnabled() ? 1 : 0);
+            ps.setBoolean(14, repo.isHasIssuesEnabled());   // antes: setInt(...,  ? 1 : 0)
             ps.setString(15, repo.getDefaultBranch());
             ps.executeUpdate();
         }
@@ -85,7 +83,7 @@ public class RepositoryStorageService {
              has_test_suite, test_framework, test_file_count, jmh_present,
              jmh_candidate, profiling_candidate, sector, travis_ci, passes_hard_filters)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-            ON CONFLICT(full_name) DO UPDATE SET
+            ON CONFLICT (full_name) DO UPDATE SET
                 build_tool=excluded.build_tool, framework=excluded.framework,
                 java_version=excluded.java_version, java21=excluded.java21,
                 graalvm_ready=excluded.graalvm_ready, has_test_suite=excluded.has_test_suite,
@@ -100,17 +98,17 @@ public class RepositoryStorageService {
             ps.setString(2, p.buildTool().name());
             ps.setString(3, p.framework().name());
             ps.setInt(4, p.javaVersion());
-            ps.setInt(5, p.java21() ? 1 : 0);
-            ps.setInt(6, p.graalvmReady() ? 1 : 0);
-            ps.setInt(7, p.hasTestSuite() ? 1 : 0);
+            ps.setBoolean(5, p.java21());
+            ps.setBoolean(6, p.graalvmReady());
+            ps.setBoolean(7, p.hasTestSuite());
             ps.setString(8, p.testFramework().name());
             ps.setInt(9, p.testFileCount());
-            ps.setInt(10, p.jmhPresent() ? 1 : 0);
-            ps.setInt(11, p.jmhCandidate() ? 1 : 0);
-            ps.setInt(12, p.profilingCandidate() ? 1 : 0);
+            ps.setBoolean(10, p.jmhPresent());
+            ps.setBoolean(11, p.jmhCandidate());
+            ps.setBoolean(12, p.profilingCandidate());
             ps.setString(13, p.sector().name());
-            ps.setInt(14, p.travisCi() ? 1 : 0);
-            ps.setInt(15, p.passesHardFilters() ? 1 : 0);
+            ps.setBoolean(14, p.travisCi());
+            ps.setBoolean(15, p.passesHardFilters());
             ps.executeUpdate();
         }
     }
@@ -119,9 +117,9 @@ public class RepositoryStorageService {
         String sql = """
             INSERT INTO repo_scores
             (full_name, technical_score, test_quality_score, ci_hygiene_score,
-             sector_score, popularity_score, maintenance_score, total_score, rank)
+             sector_score, popularity_score, maintenance_score, total_score, repo_rank)
             VALUES (?,?,?,?,?,?,?,?,?)
-            ON CONFLICT(full_name) DO UPDATE SET
+            ON CONFLICT (full_name) DO UPDATE SET
                 technical_score=excluded.technical_score,
                 test_quality_score=excluded.test_quality_score,
                 ci_hygiene_score=excluded.ci_hygiene_score,
@@ -129,7 +127,7 @@ public class RepositoryStorageService {
                 popularity_score=excluded.popularity_score,
                 maintenance_score=excluded.maintenance_score,
                 total_score=excluded.total_score,
-                rank=excluded.rank
+                repo_rank=excluded.repo_rank
         """;
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
