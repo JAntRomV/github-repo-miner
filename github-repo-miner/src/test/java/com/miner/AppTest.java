@@ -336,4 +336,57 @@ public class AppTest {
         assertTrue(analyzer.supports(BuildTool.GRADLE));
         assertFalse(analyzer.supports(BuildTool.MAVEN));
     }
+
+    // Afase 4
+    
+
+    private RepositoryData buildFakeRepo(String fullName, int stars, int forks, int watchers,
+                                      int openIssues, String license, boolean hasIssuesEnabled,
+                                      String pushedAt, TechProfile profile) {
+    RepositoryData repo = new RepositoryData();
+    repo.setFullName(fullName);
+    repo.setStars(stars);
+    repo.setForks(forks);
+    repo.setWatchersCount(watchers);
+    repo.setOpenIssues(openIssues);
+    repo.setLicense(license);
+    repo.setHasIssuesEnabled(hasIssuesEnabled);
+    repo.setPushedAt(pushedAt);
+    repo.setCommitCount(500);
+    repo.setTechProfile(profile);
+    return repo;
+}
+@Test
+public void testScoringEngineSortsDescendingByTotalScore() {
+    ScoringEngine engine = new ScoringEngine();
+
+    RepositoryData repoAlto = buildFakeRepo("owner/alto", 5000, 300, 4000, 20,
+        "MIT License", true, "Thu Jul 09 00:00:00 CST 2026",
+        new TechProfile(BuildTool.MAVEN, Framework.SPRING_BOOT, 21, true, true,
+            true, TestFramework.SPRING_BOOT_STARTER_TEST, 50,
+            true, true, true, Sector.INDUSTRY, true, true));
+
+    RepositoryData repoMedio = buildFakeRepo("owner/medio", 500, 50, 400, 10,
+        "MIT License", true, "Thu Jul 09 00:00:00 CST 2026",
+        new TechProfile(BuildTool.MAVEN, Framework.SPRING_BOOT, 21, true, false,
+            true, TestFramework.JUNIT_JUPITER, 10,
+            false, false, false, Sector.UNKNOWN, false, true));
+
+    RepositoryData repoBajo = buildFakeRepo("owner/bajo", 10, 2, 5, 50,
+        "MIT License", false, "Thu Jul 09 00:00:00 CST 2026",
+        new TechProfile(BuildTool.GRADLE, Framework.MICRONAUT, 21, true, false,
+            true, TestFramework.JUNIT_JUPITER, 2,
+            false, false, false, Sector.UNKNOWN, false, true));
+
+    // Los paso DESORDENADOS a propósito para confirmar que el sort los reordena bien
+    List<RepoScore> ranked = engine.scoreAndRank(List.of(repoBajo, repoAlto, repoMedio));
+
+    assertEquals("Rank 1 debe ser el score MÁS ALTO", "owner/alto", ranked.get(0).fullName());
+    assertEquals("Rank 2 debe ser el score MEDIO", "owner/medio", ranked.get(1).fullName());
+    assertEquals("Rank 3 debe ser el score MÁS BAJO", "owner/bajo", ranked.get(2).fullName());
+
+    // Confirma que totalScore realmente va DESCENDENTE
+    assertTrue(ranked.get(0).totalScore() > ranked.get(1).totalScore());
+    assertTrue(ranked.get(1).totalScore() > ranked.get(2).totalScore());
+}
 }
