@@ -1,78 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<modelVersion>4.0.0</modelVersion>
-<groupId>com.miner</groupId>
-<artifactId>github-repo-miner</artifactId>
-<version>1.0-SNAPSHOT</version>
-<name>github-repo-miner</name>
-<properties>
-<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-<maven.compiler.source>17</maven.compiler.source>
-<maven.compiler.target>17</maven.compiler.target>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.miner</groupId>
+    <artifactId>github-repo-miner</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>github-repo-miner</name>
 
-<!-- Valor por defecto del main a ejecutar — se puede sobreescribir con:
-     mvn exec:java -Dexec.mainClass="com.miner.OtraClase" -->
-<exec.mainClass>com.miner.App</exec.mainClass>
-</properties>
-<dependencies>
-<!-- API REST de GitHub (Fase 1) -->
-<dependency>
-<groupId>org.kohsuke</groupId>
-<artifactId>github-api</artifactId>
-<version>1.318</version>
-</dependency>
-<!-- Jackson: exportar resultados a JSON -->
-<dependency>
-<groupId>com.fasterxml.jackson.core</groupId>
-<artifactId>jackson-databind</artifactId>
-<version>2.15.2</version>
-</dependency>
-<!-- Gson: parsear respuestas GraphQL (Fase 2) y Contents API (Fase 3) -->
-<dependency>
-<groupId>com.google.code.gson</groupId>
-<artifactId>gson</artifactId>
-<version>2.10.1</version>
-</dependency>
-<!-- storage -->
-<dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>postgresql</artifactId>
-    <version>42.7.3</version>
-</dependency>
-<!-- JUnit: pruebas unitarias -->
-<dependency>
-<groupId>junit</groupId>
-<artifactId>junit</artifactId>
-<version>4.13.2</version>
-<scope>test</scope>
-</dependency>
-</dependencies>
-<build>
-<plugins>
-<!-- Compilador Java 17 -->
-<plugin>
-<groupId>org.apache.maven.plugins</groupId>
-<artifactId>maven-compiler-plugin</artifactId>
-<version>3.10.1</version>
-<configuration>
-<source>17</source>
-<target>17</target>
-</configuration>
-</plugin>
-<!-- Ejecutar con: mvn clean compile exec:java
-     Por defecto corre App (pipeline completo).
-     Para correr otra clase: mvn exec:java -Dexec.mainClass="com.miner.ScoringApp" -->
-<plugin>
-<groupId>org.codehaus.mojo</groupId>
-<artifactId>exec-maven-plugin</artifactId>
-<version>3.1.0</version>
-<configuration>
-<mainClass>${exec.mainClass}</mainClass>
-</configuration>
-</plugin>
-</plugins>
-</build>
-</project> 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
+        <exec.mainClass>com.miner.App</exec.mainClass>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>github-api</artifactId>
+            <version>1.318</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>5.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>${exec.mainClass}</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
