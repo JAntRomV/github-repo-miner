@@ -29,8 +29,10 @@ public class SharedCatalogWriter {
                 .append("defaultBranch", repo.getDefaultBranch())
                 .append("mining", miningDoc);
 
-            Document setOnInsertFields = new Document("metrics", null)
-                .append("status", "pending_metrics");
+            Document setOnInsertFields = new Document("metricsStatus", new Document()
+                    .append("static", "pending")
+                    .append("dynamic", "pending"))
+                    .append("metrics", null);
 
             Document update = new Document("$set", setFields)
                 .append("$setOnInsert", setOnInsertFields);
