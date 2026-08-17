@@ -1,10 +1,11 @@
 package com.miner;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -16,7 +17,7 @@ public class MiningController {
     private volatile String storageStatus = "idle";
 
     // ═══════════════════════════════════════════
-    // MINING (ya existente, sin cambios)
+    // MINING (sin cambios)
     // ═══════════════════════════════════════════
     @PostMapping("/mining/run")
     public ResponseEntity<String> runMining() {
@@ -41,7 +42,7 @@ public class MiningController {
     }
 
     // ═══════════════════════════════════════════
-    // SCORING (nuevo)
+    // SCORING (sin cambios)
     // ═══════════════════════════════════════════
     @PostMapping("/scoring/run")
     public ResponseEntity<String> runScoring() {
@@ -66,7 +67,7 @@ public class MiningController {
     }
 
     // ═══════════════════════════════════════════
-    // STORAGE (nuevo — este SÍ necesita Postgres)
+    // STORAGE (sin cambios — este SÍ necesita Postgres)
     // ═══════════════════════════════════════════
     @PostMapping("/storage/run")
     public ResponseEntity<String> runStorage() {
@@ -91,19 +92,63 @@ public class MiningController {
     }
 
     // ═══════════════════════════════════════════
-    // CATALOG (ya existente, sin cambios)
+    // CATALOG (corregido para usar metricsStatus + endpoint nuevo)
     // ═══════════════════════════════════════════
     @GetMapping("/catalog/status")
     public ResponseEntity<Map<String, Long>> catalogStatus() {
         MongoCollection<Document> collection = MongoManager.getCatalogCollection();
-        long pending = collection.countDocuments(Filters.eq("status", "pending_metrics"));
-        long complete = collection.countDocuments(Filters.eq("status", "metrics_complete"));
-        long failed = collection.countDocuments(Filters.eq("status", "metrics_failed"));
+
+        long pending = 0, complete = 0, failed = 0;
+
+        for (Document doc : collection.find()) {
+            String estado = calcularEstadoCombinado(doc);
+            switch (estado) {
+                case "complete" -> complete++;
+                case "failed"   -> failed++;
+                default         -> pending++;
+            }
+        }
+
         return ResponseEntity.ok(Map.of("pending", pending, "complete", complete, "failed", failed));
     }
 
+    @GetMapping("/catalog/repos")
+    public ResponseEntity<List<Map<String, String>>> catalogRepos() {
+        MongoCollection<Document> collection = MongoManager.getCatalogCollection();
+
+        List<Map<String, String>> repos = new ArrayList<>();
+
+        for (Document doc : collection.find()) {
+            String fullName = doc.getString("fullName");
+            String estado = calcularEstadoCombinado(doc);
+            repos.add(Map.of("_id", fullName, "status", estado));
+        }
+
+        return ResponseEntity.ok(repos);
+    }
+
+    // Deriva un único estado (pending/complete/failed) combinando
+    // metricsStatus.static y metricsStatus.dynamic de cada documento
+    private String calcularEstadoCombinado(Document doc) {
+        Document metricsStatus = doc.get("metricsStatus", Document.class);
+        if (metricsStatus == null) {
+            return "pending";
+        }
+
+        String estatico = metricsStatus.getString("static");
+        String dinamico = metricsStatus.getString("dynamic");
+
+        if ("failed".equals(estatico) || "failed".equals(dinamico)) {
+            return "failed";
+        }
+        if ("complete".equals(estatico) && "complete".equals(dinamico)) {
+            return "complete";
+        }
+        return "pending";
+    }
+
     // ═══════════════════════════════════════════
-    // HEALTH (ya existente, sin cambios)
+    // HEALTH (sin cambios)
     // ═══════════════════════════════════════════
     @GetMapping("/health")
     public ResponseEntity<String> health() {
