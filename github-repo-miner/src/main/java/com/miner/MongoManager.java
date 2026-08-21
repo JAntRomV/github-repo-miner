@@ -8,8 +8,7 @@ import org.bson.Document;
 
 public class MongoManager {
 
-    // Si defines MONGO_URI (Atlas), se usa esa directo.
-    // Si no, arma la URI local con los valores individuales (Docker local).
+  
     private static final String MONGO_URI_ENV = System.getenv("MONGO_URI");
 
     private static final String MONGO_DB = System.getenv().getOrDefault("MONGO_DB", "shared_catalog");

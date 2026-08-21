@@ -43,14 +43,13 @@ public class MavenAnalyzer implements BuildFileAnalyzer {
             String parentArtifact = extractParentArtifactId(doc);
             List<String> dependencies = extractDependencies(doc);
             List<String> plugins = extractPlugins(doc);
-
+            //************************************************************************************
             Framework framework = detectFramework(parentArtifact, dependencies);
 
             int javaVersion = detectJavaVersion(properties);
             boolean java21 = javaVersion == 21;
 
-            // GraalVM: native-maven-plugin O directorio META-INF/native-image
-            // O Micronaut, que es nativo por diseño (DI en tiempo de compilación, AOT)
+         
             boolean graalvmReady = plugins.stream().anyMatch(p -> p.contains("native-maven-plugin"))
                 || tree.pathContains("META-INF/native-image")
                 || framework == Framework.MICRONAUT;
@@ -75,6 +74,7 @@ public class MavenAnalyzer implements BuildFileAnalyzer {
 
             // FILTROS DUROS: framework correcto + Java 21 + set de pruebas
             boolean passesHardFilters = framework != Framework.NONE && java21 && hasTestSuite;
+            // ***********************************************************************************
 
             return new TechProfile(
                 BuildTool.MAVEN, framework, javaVersion, java21, graalvmReady,

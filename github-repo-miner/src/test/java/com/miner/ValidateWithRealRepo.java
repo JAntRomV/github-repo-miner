@@ -38,13 +38,15 @@ public class ValidateWithRealRepo {
         String fullName = "";
         //fullName = "kokuwaio/micronaut-openapi-codegen";
         // * fullName = "newbee-ltd/newbee-mall";
-        fullName = "zfile-dev/zfile"; // <- Actualmente seleccionado
+        //fullName = "zfile-dev/zfile"; // <- Actualmente seleccionado
         // *fullName = "geekidea/spring-boot-plus";
         // *fullName = "atjiu/pybbs";
         // *fullName = "YeautyYE/netty-websocket-spring-boot-starter";
         //*fullName = "LianjiaTech/retrofit-spring-boot-starter";
         //*fullName = "murraco/spring-boot-jwt";
         // *fullName = "adorsys/keycloak-config-cli";
+        // * fullName = "conductor-oss/conductor"; // esta roto 
+        fullName = "adorsys/keycloak-config-cli";
 
         // Separamos el dueño y el nombre del repositorio usando la diagonal
         String[] parts = fullName.split("/");
@@ -81,7 +83,7 @@ public class ValidateWithRealRepo {
         // Paso 1: Obtener tamaño total estimado
         System.out.println("[ 1/3 ] Obteniendo árbol de archivos...");
         TreeMetrics metrics = fetchTreeMetrics(owner, repo);
-        int estimatedMethods = (metrics.totalBytes / 1024) * 8;
+        int estimatedMethods = (metrics.totalBytes / 1024) * 6;
 
         System.out.printf(
             "        ✓ %,d bytes totales | %d archivos .java | Estimado: %d métodos\n\n",

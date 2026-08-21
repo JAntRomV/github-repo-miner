@@ -23,17 +23,16 @@ public class SharedCatalogWriter {
             RepoScore score = scoreByName.get(repo.getFullName());
             Document miningDoc = buildMiningDoc(repo, score);
 
-            // $set actualiza SOLO nuestros campos (mining, fullName, htmlUrl, defaultBranch)
-            // $setOnInsert solo aplica la PRIMERA vez que se crea el documento —
-            // así, si Tania ya puso metrics/status="metrics_complete", una
-            // re-corrida de este writer NUNCA lo pisa ni lo resetea.
+       
             Document setFields = new Document("fullName", repo.getFullName())
                 .append("htmlUrl", repo.getHtmlUrl())
                 .append("defaultBranch", repo.getDefaultBranch())
                 .append("mining", miningDoc);
 
-            Document setOnInsertFields = new Document("metrics", null)
-                .append("status", "pending_metrics");
+            Document setOnInsertFields = new Document("metricsStatus", new Document()
+                    .append("static", "pending")
+                    .append("dynamic", "pending"))
+                    .append("metrics", null);
 
             Document update = new Document("$set", setFields)
                 .append("$setOnInsert", setOnInsertFields);
