@@ -80,6 +80,17 @@ public class DatabaseManager {
                     repo_rank INTEGER
                 )
             """);
+            stmt.execute("""
+                        CREATE TABLE IF NOT EXISTS pipeline_stats (
+                            id SERIAL PRIMARY KEY,
+                            total_available INTEGER,
+                            phase1_approved INTEGER,
+                            phase2_approved INTEGER,
+                            phase3_approved INTEGER,
+                            scored_count INTEGER,
+                            run_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        )
+                    """);
         }
         System.out.println("✓ Esquema verificado/creado en PostgreSQL (" + DB_NAME + ")");
     }

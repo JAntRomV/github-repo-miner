@@ -1,4 +1,4 @@
-    package com.miner;
+package com.miner;
 
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
@@ -11,6 +11,9 @@ public class GitHubSearchService {
 
     private SearchFilters filters;
     private RepositoryValidator validator;
+    
+    // C.1 — Campo acumulador para guardar el total reportado por GitHub
+    private int totalReportadoPorGithub = 0;
 
     public GitHubSearchService(SearchFilters filters, RepositoryValidator validator) {
         this.filters   = filters;
@@ -47,7 +50,12 @@ public class GitHubSearchService {
                 PagedSearchIterable<GHRepository> searchResults =
                     github.searchRepositories().q(query).list();
 
-                System.out.println("  [API] Total reportado por GitHub: " + searchResults.getTotalCount());
+                int total = searchResults.getTotalCount();
+                
+                // C.1 — Acumular el total por cada topic consultado
+                totalReportadoPorGithub += total;
+
+                System.out.println("  [API] Total reportado por GitHub: " + total);
                 System.out.println("  [Validando cada resultado...]\n");
 
                 // Resetear contadores para este topic
@@ -61,7 +69,7 @@ public class GitHubSearchService {
                 }
 
                 // Reporte de cuántos pasaron cada filtro para este topic
-                 validator.printPhase1Report(); 
+                validator.printPhase1Report(); 
             }
 
             System.out.println("\n========================================");
@@ -78,5 +86,10 @@ public class GitHubSearchService {
             System.err.println("Ocurrió un error en el flujo de la API: " + e.getMessage());
             return new ArrayList<>();  // <-- agregar este return
         }
+    }
+
+    // C.1 — Getter público para obtener el acumulado total
+    public int getTotalReportadoPorGithub() {
+        return totalReportadoPorGithub;
     }
 }
