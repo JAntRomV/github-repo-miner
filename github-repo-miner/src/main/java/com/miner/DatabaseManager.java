@@ -16,7 +16,7 @@ public class DatabaseManager {
     private static final String DB_PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "miner_pass");
 
     private static final String DB_URL =
-        String.format("jdbc:postgresql://%s:%s/%s", DB_HOST, DB_PORT, DB_NAME);
+    String.format("jdbc:postgresql://%s:%s/%s?sslmode=require", DB_HOST, DB_PORT, DB_NAME);
 
     public static Connection connect() throws SQLException {
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
